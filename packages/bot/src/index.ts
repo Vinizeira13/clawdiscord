@@ -18,8 +18,14 @@ import { config } from 'dotenv';
 import { readFileSync, readdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { ActivityType } from 'discord.js';
 import { handleGuildCreate } from './events/guildCreate.js';
 import { SetupService } from './services/setup.js';
+import { AutoModService, type AutoModConfig } from './services/automod.js';
+import { BackupService } from './services/backup.js';
+import { AnalyticsService } from './services/analytics.js';
+import { AIAgent } from './services/ai-agent.js';
+import { OnboardingService } from './services/onboarding.js';
 
 config();
 
@@ -76,17 +82,84 @@ const commands = [
         .setName('reset')
         .setDescription('Remove all channels and roles created by ClawDiscord')
     )
+    .addSubcommand((sub) =>
+      sub
+        .setName('backup')
+        .setDescription('Export this server as a reusable template')
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName('analytics')
+        .setDescription('Server health report with score and recommendations')
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName('automod')
+        .setDescription('Setup AI-powered auto-moderation rules')
+        .addStringOption((opt) =>
+          opt
+            .setName('preset')
+            .setDescription('AutoMod preset to apply')
+            .setRequired(true)
+            .addChoices(
+              { name: 'Light — Spam only', value: 'light' },
+              { name: 'Standard — Spam + profanity + mentions', value: 'standard' },
+              { name: 'Strict — All filters enabled', value: 'strict' }
+            )
+        )
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName('ai')
+        .setDescription('Generate a custom server with AI (describe your community)')
+        .addStringOption((opt) =>
+          opt
+            .setName('description')
+            .setDescription('Describe your community (e.g. "crypto trading group with 500 members")')
+            .setRequired(true)
+        )
+        .addStringOption((opt) =>
+          opt
+            .setName('style')
+            .setDescription('Server complexity')
+            .addChoices(
+              { name: 'Minimal (20 channels)', value: 'minimal' },
+              { name: 'Standard (35 channels)', value: 'standard' },
+              { name: 'Maximal (60 channels)', value: 'maximal' }
+            )
+        )
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName('clone')
+        .setDescription('Clone this server structure to another server')
+        .addStringOption((opt) =>
+          opt
+            .setName('target')
+            .setDescription('Target server ID to clone to')
+            .setRequired(true)
+        )
+    )
     .toJSON(),
 ];
 
 // ─── CLIENT ───
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.AutoModerationConfiguration,
+    GatewayIntentBits.AutoModerationExecution,
+  ],
 });
 
 client.once(Events.ClientReady, async (c) => {
   console.log(`🐾 ClawDiscord Bot ready! Logged in as ${c.user.tag}`);
   console.log(`   Serving ${c.guilds.cache.size} guilds`);
+
+  // Start status rotation
+  startStatusRotation(client);
 
   // Register slash commands
   try {
@@ -126,6 +199,21 @@ client.on(Events.InteractionCreate, async (interaction) => {
         break;
       case 'reset':
         await handleReset(interaction);
+        break;
+      case 'backup':
+        await handleBackup(interaction);
+        break;
+      case 'analytics':
+        await handleAnalytics(interaction);
+        break;
+      case 'automod':
+        await handleAutoMod(interaction);
+        break;
+      case 'ai':
+        await handleAI(interaction);
+        break;
+      case 'clone':
+        await handleClone(interaction);
         break;
     }
   } catch (err) {
@@ -513,6 +601,369 @@ async function handleReset(interaction: ChatInputCommandInteraction) {
       throw error;
     }
   }
+}
+
+// ─── /clawdiscord backup ───
+async function handleBackup(interaction: ChatInputCommandInteraction) {
+  const guild = interaction.guild;
+  if (!guild) return interaction.reply({ content: 'Server only.', ephemeral: true });
+  if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
+    return interaction.reply({ content: '❌ Admin required.', ephemeral: true });
+  }
+
+  await interaction.deferReply();
+
+  try {
+    const backupService = new BackupService(guild.id, process.env.DISCORD_TOKEN!);
+    const { template, stats } = await backupService.backup();
+
+    const json = JSON.stringify(template, null, 2);
+    const embed = new EmbedBuilder()
+      .setTitle('📦 Server Backup Complete')
+      .setColor(0x2ecc71)
+      .addFields(
+        { name: '📁 Categories', value: stats.categories.toString(), inline: true },
+        { name: '💬 Channels', value: stats.channels.toString(), inline: true },
+        { name: '👥 Roles', value: stats.roles.toString(), inline: true },
+      )
+      .setDescription(`Template ID: \`${template.id}\`\nUse \`/clawdiscord clone\` to apply this backup to another server.`)
+      .setFooter({ text: 'ClawDiscord — Server Backup System' })
+      .setTimestamp();
+
+    // Send as attachment if too large for embed
+    if (json.length > 1900) {
+      const buffer = Buffer.from(json, 'utf-8');
+      await interaction.editReply({
+        embeds: [embed],
+        files: [{ attachment: buffer, name: `${template.id}.json` }],
+      });
+    } else {
+      embed.addFields({ name: 'Template JSON', value: `\`\`\`json\n${json.slice(0, 1000)}...\n\`\`\`` });
+      await interaction.editReply({ embeds: [embed] });
+    }
+  } catch (error) {
+    await interaction.editReply({ content: `❌ Backup failed: ${(error as Error).message}` });
+  }
+}
+
+// ─── /clawdiscord analytics ───
+async function handleAnalytics(interaction: ChatInputCommandInteraction) {
+  const guild = interaction.guild;
+  if (!guild) return interaction.reply({ content: 'Server only.', ephemeral: true });
+
+  await interaction.deferReply();
+
+  try {
+    const analytics = new AnalyticsService(guild.id, process.env.DISCORD_TOKEN!);
+    const report = await analytics.analyze();
+
+    const scoreEmoji = report.health.score >= 80 ? '🟢' : report.health.score >= 60 ? '🟡' : '🔴';
+    const scoreBar = '█'.repeat(Math.floor(report.health.score / 10)) + '░'.repeat(10 - Math.floor(report.health.score / 10));
+
+    const embed = new EmbedBuilder()
+      .setTitle(`📊 Server Health Report — ${report.server.name}`)
+      .setColor(report.health.score >= 80 ? 0x2ecc71 : report.health.score >= 60 ? 0xf39c12 : 0xe74c3c)
+      .addFields(
+        { name: `${scoreEmoji} Health Score`, value: `\`${scoreBar}\` **${report.health.score}/100**`, inline: false },
+        { name: '👥 Members', value: `${report.server.memberCount.toLocaleString()}${report.server.onlineCount ? ` (${report.server.onlineCount} online)` : ''}`, inline: true },
+        { name: '🚀 Boost', value: `Level ${report.server.boostLevel} (${report.server.boostCount} boosts)`, inline: true },
+        { name: '📅 Age', value: `${report.server.ageInDays} days`, inline: true },
+        { name: '📁 Channels', value: `${report.channels.total} total\n${report.channels.text} text · ${report.channels.voice} voice · ${report.channels.forum} forum`, inline: true },
+        { name: '👥 Roles', value: `${report.roles.total} total\n${report.roles.withPermissions.admin} admin · ${report.roles.withPermissions.moderator} mod · ${report.roles.managed} bot`, inline: true },
+      )
+      .setFooter({ text: 'ClawDiscord Analytics' })
+      .setTimestamp();
+
+    if (report.health.issues.length > 0) {
+      embed.addFields({
+        name: '⚠️ Issues',
+        value: report.health.issues.slice(0, 5).map(i => `• ${i}`).join('\n'),
+      });
+    }
+
+    if (report.health.recommendations.length > 0) {
+      embed.addFields({
+        name: '💡 Recommendations',
+        value: report.health.recommendations.slice(0, 5).map(r => `• ${r}`).join('\n'),
+      });
+    }
+
+    await interaction.editReply({ embeds: [embed] });
+  } catch (error) {
+    await interaction.editReply({ content: `❌ Analysis failed: ${(error as Error).message}` });
+  }
+}
+
+// ─── /clawdiscord automod ───
+async function handleAutoMod(interaction: ChatInputCommandInteraction) {
+  const guild = interaction.guild;
+  if (!guild) return interaction.reply({ content: 'Server only.', ephemeral: true });
+  if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
+    return interaction.reply({ content: '❌ Admin required.', ephemeral: true });
+  }
+
+  const preset = interaction.options.getString('preset', true);
+  await interaction.deferReply();
+
+  const presets: Record<string, AutoModConfig> = {
+    light: { spam_filter: true },
+    standard: { spam_filter: true, mention_limit: 5, invite_filter: true },
+    strict: {
+      spam_filter: true,
+      mention_limit: 3,
+      invite_filter: true,
+      keyword_filter: ['free nitro', 'claim your prize', 'steam gift'],
+      link_filter: true,
+    },
+  };
+
+  const config = presets[preset];
+  if (!config) {
+    await interaction.editReply({ content: '❌ Invalid preset.' });
+    return;
+  }
+
+  // Find a staff/mod-log channel for alerts
+  const channels = guild.channels.cache;
+  const alertChannel = channels.find(c =>
+    c.name.includes('mod-log') || c.name.includes('audit') || c.name.includes('staff-log')
+  );
+
+  const automod = new AutoModService(guild.id, process.env.DISCORD_TOKEN!);
+  const result = await automod.apply(config, alertChannel?.id);
+
+  const embed = new EmbedBuilder()
+    .setTitle(`🛡️ AutoMod Applied — ${preset.charAt(0).toUpperCase() + preset.slice(1)} Preset`)
+    .setColor(0x5865f2)
+    .addFields(
+      { name: '✅ Rules Created', value: result.created.toString(), inline: true },
+      { name: '📢 Alert Channel', value: alertChannel ? `#${alertChannel.name}` : 'None (create a #mod-log channel)', inline: true },
+    )
+    .setFooter({ text: 'Use /clawdiscord automod again to add more rules' })
+    .setTimestamp();
+
+  if (result.errors.length > 0) {
+    embed.addFields({ name: '⚠️ Errors', value: result.errors.slice(0, 3).join('\n') });
+  }
+
+  await interaction.editReply({ embeds: [embed] });
+}
+
+// ─── /clawdiscord ai ───
+async function handleAI(interaction: ChatInputCommandInteraction) {
+  const guild = interaction.guild;
+  if (!guild) return interaction.reply({ content: 'Server only.', ephemeral: true });
+  if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
+    return interaction.reply({ content: '❌ Admin required.', ephemeral: true });
+  }
+
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    return interaction.reply({
+      content: '❌ AI Agent not configured. Set `ANTHROPIC_API_KEY` in the bot environment.',
+      ephemeral: true,
+    });
+  }
+
+  const description = interaction.options.getString('description', true);
+  const style = (interaction.options.getString('style') || 'standard') as 'minimal' | 'standard' | 'maximal';
+
+  await interaction.deferReply();
+
+  const thinkingEmbed = new EmbedBuilder()
+    .setTitle('🤖 AI Agent is designing your server...')
+    .setColor(0x7c3aed)
+    .setDescription(`**Your request:** "${description}"\n\n⏳ Generating custom template with AI...`)
+    .setFooter({ text: 'Powered by Claude — this takes 5-15 seconds' });
+
+  await interaction.editReply({ embeds: [thinkingEmbed] });
+
+  const agent = new AIAgent(apiKey);
+  const result = await agent.generateTemplate(description, { style });
+
+  if (!result.template) {
+    await interaction.editReply({
+      embeds: [new EmbedBuilder()
+        .setTitle('❌ AI Generation Failed')
+        .setColor(0xe74c3c)
+        .setDescription(result.error || 'Unknown error. Try a more specific description.')
+      ],
+    });
+    return;
+  }
+
+  const template = result.template;
+  const totalChannels = template.categories.reduce((acc, c) => acc + c.channels.length, 0);
+
+  const previewEmbed = new EmbedBuilder()
+    .setTitle(`✨ AI Generated: ${template.name}`)
+    .setColor(0x7c3aed)
+    .setDescription(template.description || description)
+    .addFields(
+      { name: '📁 Categories', value: template.categories.length.toString(), inline: true },
+      { name: '💬 Channels', value: totalChannels.toString(), inline: true },
+      { name: '👥 Roles', value: template.roles.length.toString(), inline: true },
+      { name: '🧠 Tokens Used', value: (result.tokensUsed || 0).toLocaleString(), inline: true },
+    )
+    .setFooter({ text: 'Review the template below, then click Apply to build your server' });
+
+  // Show category preview
+  const catPreview = template.categories
+    .map(c => `**${c.name}** (${c.channels.length} ch)`)
+    .join('\n');
+  if (catPreview.length < 1024) {
+    previewEmbed.addFields({ name: '📋 Structure', value: catPreview });
+  }
+
+  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    new ButtonBuilder().setCustomId('ai_apply').setLabel('✅ Apply to Server').setStyle(ButtonStyle.Success),
+    new ButtonBuilder().setCustomId('ai_cancel').setLabel('❌ Cancel').setStyle(ButtonStyle.Danger),
+    new ButtonBuilder().setCustomId('ai_download').setLabel('📥 Download JSON').setStyle(ButtonStyle.Secondary),
+  );
+
+  const response = await interaction.editReply({ embeds: [previewEmbed], components: [row] });
+
+  try {
+    const btn = await (response as import('discord.js').Message).awaitMessageComponent({
+      componentType: ComponentType.Button,
+      filter: (i: ButtonInteraction) => i.user.id === interaction.user.id,
+      time: 60_000,
+    });
+
+    if (btn.customId === 'ai_cancel') {
+      await btn.update({ content: '❌ Cancelled.', embeds: [], components: [] });
+      return;
+    }
+
+    if (btn.customId === 'ai_download') {
+      const json = JSON.stringify(template, null, 2);
+      const buffer = Buffer.from(json, 'utf-8');
+      await btn.update({
+        content: '📥 Here\'s your AI-generated template:',
+        embeds: [],
+        components: [],
+        files: [{ attachment: buffer, name: `${template.id || 'ai-template'}.json` }],
+      });
+      return;
+    }
+
+    // Apply the template
+    activeSetups.add(guild.id);
+    await btn.update({
+      embeds: [new EmbedBuilder().setTitle('🔧 Building your AI-designed server...').setColor(0x5865f2)],
+      components: [],
+    });
+
+    const setupService = new SetupService(guild.id, template as unknown as import('./services/setup.js').ServerTemplate, process.env.DISCORD_TOKEN!);
+    const setupResult = await setupService.execute();
+    activeSetups.delete(guild.id);
+
+    // Apply automod if template has it
+    if ((template as unknown as Record<string, unknown>).automod) {
+      const automod = new AutoModService(guild.id, process.env.DISCORD_TOKEN!);
+      await automod.apply((template as unknown as Record<string, unknown>).automod as AutoModConfig);
+    }
+
+    const resultEmbed = new EmbedBuilder()
+      .setTitle(setupResult.success ? '✅ AI Server Built!' : '⚠️ Built with Errors')
+      .setColor(setupResult.success ? 0x2ecc71 : 0xf39c12)
+      .addFields(
+        { name: '👥 Roles', value: setupResult.stats.roles.toString(), inline: true },
+        { name: '📁 Categories', value: setupResult.stats.categories.toString(), inline: true },
+        { name: '💬 Channels', value: setupResult.stats.channels.toString(), inline: true },
+        { name: '📝 Embeds', value: setupResult.stats.embeds.toString(), inline: true },
+        { name: '⏱️ Duration', value: `${(setupResult.duration / 1000).toFixed(1)}s`, inline: true },
+      )
+      .setDescription('🤖 This server was designed by AI based on your description.')
+      .setFooter({ text: 'ClawDiscord AI — The future of Discord automation' })
+      .setTimestamp();
+
+    await interaction.editReply({ embeds: [resultEmbed] });
+  } catch (error) {
+    activeSetups.delete(guild.id);
+    if ((error as Error).message?.includes('time')) {
+      await interaction.editReply({ content: '⏰ Timed out.', embeds: [], components: [] });
+    } else {
+      await interaction.editReply({ content: `❌ Error: ${(error as Error).message?.slice(0, 200)}`, embeds: [], components: [] }).catch(() => {});
+    }
+  }
+}
+
+// ─── /clawdiscord clone ───
+async function handleClone(interaction: ChatInputCommandInteraction) {
+  const guild = interaction.guild;
+  if (!guild) return interaction.reply({ content: 'Server only.', ephemeral: true });
+  if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
+    return interaction.reply({ content: '❌ Admin required.', ephemeral: true });
+  }
+
+  const targetGuildId = interaction.options.getString('target', true);
+
+  await interaction.deferReply();
+
+  try {
+    // Backup current server
+    const backupService = new BackupService(guild.id, process.env.DISCORD_TOKEN!);
+    const { template, stats } = await backupService.backup();
+
+    await interaction.editReply({
+      embeds: [new EmbedBuilder()
+        .setTitle('📦 Backup complete, now cloning...')
+        .setColor(0x5865f2)
+        .setDescription(`Backed up ${stats.channels} channels, ${stats.roles} roles. Applying to target server...`)
+      ],
+    });
+
+    // Apply to target
+    const setupService = new SetupService(
+      targetGuildId,
+      template as unknown as import('./services/setup.js').ServerTemplate,
+      process.env.DISCORD_TOKEN!
+    );
+    const result = await setupService.execute();
+
+    const embed = new EmbedBuilder()
+      .setTitle(result.success ? '✅ Server Cloned!' : '⚠️ Clone Completed with Errors')
+      .setColor(result.success ? 0x2ecc71 : 0xf39c12)
+      .addFields(
+        { name: 'Source', value: guild.name, inline: true },
+        { name: 'Target', value: targetGuildId, inline: true },
+        { name: '📁 Categories', value: result.stats.categories.toString(), inline: true },
+        { name: '💬 Channels', value: result.stats.channels.toString(), inline: true },
+        { name: '👥 Roles', value: result.stats.roles.toString(), inline: true },
+        { name: '⏱️ Duration', value: `${(result.duration / 1000).toFixed(1)}s`, inline: true },
+      )
+      .setFooter({ text: 'ClawDiscord — Server Cloning' })
+      .setTimestamp();
+
+    if (result.errors.length > 0) {
+      embed.addFields({ name: '⚠️ Errors', value: result.errors.slice(0, 3).join('\n').slice(0, 1024) });
+    }
+
+    await interaction.editReply({ embeds: [embed] });
+  } catch (error) {
+    await interaction.editReply({ content: `❌ Clone failed: ${(error as Error).message}` });
+  }
+}
+
+// ─── BOT STATUS ROTATION ───
+function startStatusRotation(client: Client) {
+  const statuses = [
+    () => ({ name: `${client.guilds.cache.size} servers`, type: ActivityType.Watching as const }),
+    () => ({ name: '/clawdiscord setup', type: ActivityType.Listening as const }),
+    () => ({ name: 'AI-powered server builder', type: ActivityType.Playing as const }),
+    () => ({ name: 'claw-discord.com', type: ActivityType.Watching as const }),
+  ];
+
+  let idx = 0;
+  setInterval(() => {
+    const status = statuses[idx % statuses.length]();
+    client.user?.setPresence({
+      activities: [{ name: status.name, type: status.type }],
+      status: 'online',
+    });
+    idx++;
+  }, 30_000); // Rotate every 30s
 }
 
 // ─── LOGIN ───
