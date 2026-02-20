@@ -96,7 +96,13 @@ export function loadTemplate(id: string): ServerTemplate | null {
     const templatesDir = getTemplatesDir();
     const filePath = join(templatesDir, `${id}.json`);
     const raw = readFileSync(filePath, 'utf-8');
-    return JSON.parse(raw) as ServerTemplate;
+    const parsed = JSON.parse(raw);
+    // Validate required fields
+    if (!parsed.name || !Array.isArray(parsed.categories) || !Array.isArray(parsed.roles)) {
+      logger.error(`Template "${id}" is missing required fields (name, categories, roles).`);
+      return null;
+    }
+    return parsed as ServerTemplate;
   } catch {
     return null;
   }

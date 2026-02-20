@@ -263,7 +263,13 @@ function loadTemplate(id: string): Record<string, unknown> | null {
   try {
     const dir = getTemplatesDir();
     const raw = readFileSync(join(dir, `${id}.json`), 'utf-8');
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    // Validate required fields
+    if (!parsed.name || !Array.isArray(parsed.categories) || !Array.isArray(parsed.roles)) {
+      console.error(`Template "${id}" missing required fields (name, categories, roles)`);
+      return null;
+    }
+    return parsed;
   } catch {
     return null;
   }
@@ -346,7 +352,7 @@ async function handleSetup(interaction: ChatInputCommandInteraction) {
 
     const setupService = new SetupService(
       guild.id,
-      template as any,
+      template as unknown as import('./services/setup.js').ServerTemplate,
       process.env.DISCORD_TOKEN!,
       async (phase, current, total) => {
         const phaseNames: Record<string, string> = {
@@ -391,10 +397,14 @@ async function handleSetup(interaction: ChatInputCommandInteraction) {
     await interaction.editReply({ embeds: [resultEmbed] });
   } catch (error) {
     activeSetups.delete(guild.id);
-    if ((error as Error).message?.includes('time')) {
+    const errMsg = (error as Error).message || String(error);
+    if (errMsg.includes('time')) {
       await interaction.editReply({ content: '⏰ Setup timed out. Run the command again.', embeds: [], components: [] });
+    } else if (errMsg.includes('Missing Access') || errMsg.includes('Missing Permissions')) {
+      await interaction.editReply({ content: '❌ Bot is missing permissions. Make sure it has **Administrator** or **Manage Server + Manage Roles + Manage Channels** permissions.', embeds: [], components: [] });
     } else {
-      throw error;
+      console.error('Setup error:', error);
+      await interaction.editReply({ content: `❌ Setup failed: ${errMsg.slice(0, 200)}`, embeds: [], components: [] }).catch(() => {});
     }
   }
 }
@@ -443,8 +453,9 @@ async function handleReset(interaction: ChatInputCommandInteraction) {
     let deletedRoles = 0;
     const errors: string[] = [];
 
-    // Delete all non-category channels, then categories
-    const channels = (await rest.get(Routes.guildChannels(guild.id))) as Array<{ id: string; name: string; type: number }>;
+    // Delete all non-category channels, then categories (skip Discord system channels like rules/community-updates)
+    const allChannels = (await rest.get(Routes.guildChannels(guild.id))) as Array<{ id: string; name: string; type: number; flags?: number }>;
+    const channels = allChannels.filter(c => !(c.flags && (c.flags & (1 << 0))));  // Skip system/undeletable channels
 
     // Delete channels first (non-categories)
     for (const ch of channels.filter(c => c.type !== 4)) {

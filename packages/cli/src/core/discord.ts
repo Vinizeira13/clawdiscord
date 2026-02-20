@@ -13,6 +13,8 @@ export interface DiscordChannel {
   name: string;
   type: number;
   parent_id?: string;
+  flags?: number;
+  position?: number;
 }
 
 export interface DiscordRole {
@@ -21,6 +23,7 @@ export interface DiscordRole {
   color: number;
   position: number;
   permissions: string;
+  managed?: boolean;
 }
 
 export interface DiscordMember {

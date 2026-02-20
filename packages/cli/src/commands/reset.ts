@@ -47,7 +47,7 @@ export async function resetCommand(options: ResetOptions) {
   // Get current stats
   const channels = await discord.getGuildChannels(guildId!);
   const roles = await discord.getGuildRoles(guildId!);
-  const nonDefaultRoles = roles.filter(r => r.id !== guildId && !r.name.startsWith('@'));
+  const nonDefaultRoles = roles.filter(r => r.id !== guildId && !r.managed && !r.name.startsWith('@'));
 
   logger.warn(`\n⚠️  This will delete from "${guild.name}":`);
   logger.info(`   ${channels.length} channels`);

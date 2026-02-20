@@ -49,7 +49,7 @@ interface RoleConfig {
   permissions_deny?: string[];
 }
 
-interface ServerTemplate {
+export interface ServerTemplate {
   id: string;
   name: string;
   description: string;
@@ -109,7 +109,11 @@ export class SetupService {
     this.rest = new REST({ version: '10' }).setToken(token);
     this.guildId = guildId;
     this.template = template;
-    this.onProgress = onProgress || (() => {});
+    this.onProgress = onProgress
+      ? async (...args: Parameters<ProgressCallback>) => {
+          try { await onProgress(...args); } catch { /* ignore UI update failures */ }
+        }
+      : () => {};
   }
 
   async execute(): Promise<SetupResult> {
@@ -240,7 +244,7 @@ export class SetupService {
     const overwrites: object[] = [];
     const everyoneId = this.guildId; // @everyone role ID = guild ID
 
-    if (channel.permissions?.everyone?.send_messages === false) {
+    if (channel.permissions?.everyone?.send_messages === false || channel.type === 'announcement') {
       overwrites.push({ id: everyoneId, type: 0, deny: P.SEND_MESSAGES.toString() });
     }
 
@@ -266,6 +270,8 @@ export class SetupService {
       const roleId = this.roleMap.get(channel.permissions.role_locked);
       if (roleId) {
         overwrites.push({ id: roleId, type: 0, allow: P.VIEW_CHANNEL.toString() });
+      } else {
+        console.warn(`[ClawDiscord] role_locked references unknown role "${channel.permissions.role_locked}" on channel "${channel.name}"`);
       }
       for (const staffName of this.getStaffRoleNames()) {
         const staffId = this.roleMap.get(staffName);
@@ -293,8 +299,8 @@ export class SetupService {
   private async apiPost(route: `/${string}`, body: unknown): Promise<{ id: string; [key: string]: unknown }> {
     this.requestCount++;
 
-    // Pause every 40 requests to respect rate limits
-    if (this.requestCount % 40 === 0) {
+    // Pause every 40 requests to respect rate limits (skip on first request)
+    if (this.requestCount > 1 && this.requestCount % 40 === 0) {
       await new Promise(r => setTimeout(r, 1000));
     } else {
       await new Promise(r => setTimeout(r, 35));

@@ -10,7 +10,7 @@ interface SetupOptions {
   dryRun?: boolean;
 }
 
-const CLIENT_ID = process.env.DISCORD_CLIENT_ID || '1474410305609273598';
+const CLIENT_ID = process.env.DISCORD_CLIENT_ID || '1474410305609273598'; // TODO: move to shared config
 
 export async function setupCommand(options: SetupOptions) {
   logger.banner();
@@ -128,7 +128,7 @@ export async function setupCommand(options: SetupOptions) {
       includeEngagement: answers.includeEngagement,
       serverName: answers.serverName || undefined,
     });
-    builder.dryRun();
+    await builder.dryRun();
     return;
   }
 
