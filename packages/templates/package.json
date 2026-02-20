@@ -1,0 +1,10 @@
+{
+  "name": "@clawdiscord/templates",
+  "version": "0.1.0",
+  "description": "Discord server templates for ClawDiscord",
+  "main": "index.js",
+  "scripts": {
+    "validate": "node validate.js"
+  },
+  "license": "MIT"
+}

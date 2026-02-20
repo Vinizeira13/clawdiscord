@@ -1,0 +1,7 @@
+{
+  "name": "@clawdiscord/web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ClawDiscord landing page and dashboard (Next.js - Phase 4)",
+  "scripts": {}
+}

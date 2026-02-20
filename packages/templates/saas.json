@@ -1,0 +1,315 @@
+{
+  "id": "saas",
+  "name": "SaaS Community",
+  "description": "Professional SaaS product community with support, feedback, dev updates, knowledge base, and user engagement.",
+  "settings": {
+    "verification_level": 2,
+    "default_notifications": 1,
+    "explicit_content_filter": 2
+  },
+  "categories": [
+    {
+      "name": "━━━ START HERE ━━━",
+      "channels": [
+        {
+          "name": "welcome",
+          "type": "text",
+          "topic": "👋 Welcome to our community! Start here.",
+          "permissions": { "everyone": { "send_messages": false } },
+          "embed": {
+            "title": "👋 Welcome to Our Community!",
+            "description": "We're glad you're here! This is the official community for our product.",
+            "color": "#5865F2",
+            "fields": [
+              { "name": "🚀 Get Started", "value": "1. Read the #rules\n2. Grab roles in #roles\n3. Introduce yourself in #introductions\n4. Need help? Check #support" },
+              { "name": "📚 Resources", "value": "• #docs — Documentation & guides\n• #faq — Common questions\n• #changelog — Latest updates\n• #roadmap — What's coming next" },
+              { "name": "💬 Community", "value": "• #general — Chat with the community\n• #showcase — Share what you've built\n• #feedback — Help us improve" }
+            ],
+            "footer": "Powered by ClawDiscord 🐾"
+          }
+        },
+        {
+          "name": "rules",
+          "type": "text",
+          "topic": "📜 Community guidelines",
+          "permissions": { "everyone": { "send_messages": false } },
+          "embed": {
+            "title": "📜 Community Rules",
+            "color": "#E74C3C",
+            "fields": [
+              { "name": "1. Be Professional", "value": "Maintain a respectful, professional tone. No harassment or discrimination." },
+              { "name": "2. Stay On Topic", "value": "Use appropriate channels for your messages. Off-topic goes in #off-topic." },
+              { "name": "3. No Spam/Self-Promo", "value": "No unsolicited promotion. Share in #showcase if relevant to the product." },
+              { "name": "4. Search Before Asking", "value": "Check #faq and #docs before asking in support. It might already be answered!" },
+              { "name": "5. Report Issues Properly", "value": "Use #bug-reports with reproduction steps. Vague reports are hard to fix." },
+              { "name": "6. Respect Privacy", "value": "Don't share private conversations, API keys, or personal data in public channels." }
+            ]
+          }
+        },
+        {
+          "name": "roles",
+          "type": "text",
+          "topic": "🎭 Pick your roles",
+          "permissions": { "everyone": { "send_messages": false } },
+          "embed": {
+            "title": "🎭 Select Your Roles",
+            "color": "#3498DB",
+            "fields": [
+              { "name": "📋 Plan", "value": "🆓 Free • ⭐ Pro • 💎 Enterprise" },
+              { "name": "👨‍💻 Role", "value": "🔧 Developer • 🎨 Designer • 📊 Product Manager • 🚀 Founder" },
+              { "name": "🔔 Notifications", "value": "📢 Updates • 🐛 Bug Fixes • 🗺️ Roadmap • 📝 Blog Posts" }
+            ]
+          }
+        },
+        {
+          "name": "announcements",
+          "type": "announcement",
+          "topic": "📢 Official product announcements",
+          "permissions": { "everyone": { "send_messages": false } }
+        }
+      ]
+    },
+    {
+      "name": "━━━ PRODUCT ━━━",
+      "channels": [
+        {
+          "name": "changelog",
+          "type": "text",
+          "topic": "📝 Version updates, new features, and improvements",
+          "permissions": { "everyone": { "send_messages": false } },
+          "embed": {
+            "title": "📝 Changelog",
+            "description": "All product updates are posted here. Enable notifications to stay up to date!",
+            "color": "#2ECC71"
+          }
+        },
+        {
+          "name": "roadmap",
+          "type": "text",
+          "topic": "🗺️ What we're building next — vote and discuss upcoming features",
+          "permissions": { "everyone": { "send_messages": false } },
+          "embed": {
+            "title": "🗺️ Product Roadmap",
+            "description": "Here's what we're working on and what's coming next.",
+            "color": "#9B59B6",
+            "fields": [
+              { "name": "✅ Recently Shipped", "value": "Check #changelog for the latest releases" },
+              { "name": "🔨 In Progress", "value": "Will be updated as we build" },
+              { "name": "📋 Planned", "value": "Vote on features in #feature-requests!" },
+              { "name": "💡 Exploring", "value": "Ideas we're considering based on your feedback" }
+            ]
+          }
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "topic": "🟢 System status and incident reports",
+          "permissions": { "everyone": { "send_messages": false } },
+          "embed": {
+            "title": "🟢 System Status: All Systems Operational",
+            "description": "Current uptime and system health. Incidents will be posted here.",
+            "color": "#2ECC71"
+          }
+        },
+        {
+          "name": "docs",
+          "type": "text",
+          "topic": "📚 Documentation links, guides, and tutorials",
+          "permissions": { "everyone": { "send_messages": false } }
+        }
+      ]
+    },
+    {
+      "name": "━━━ COMMUNITY ━━━",
+      "channels": [
+        {
+          "name": "general",
+          "type": "text",
+          "topic": "💬 General discussion about the product and community",
+          "slowmode": 3
+        },
+        {
+          "name": "introductions",
+          "type": "text",
+          "topic": "👋 New here? Tell us about yourself and what you're building!",
+          "slowmode": 30
+        },
+        {
+          "name": "showcase",
+          "type": "text",
+          "topic": "🚀 Show off what you've built with our product!",
+          "slowmode": 60,
+          "embed": {
+            "title": "🚀 Community Showcase",
+            "description": "Share what you've built! Include screenshots, links, and a brief description.",
+            "color": "#F1C40F"
+          }
+        },
+        {
+          "name": "off-topic",
+          "type": "text",
+          "topic": "🌐 Non-product discussions — tech, life, whatever"
+        },
+        {
+          "name": "jobs-hiring",
+          "type": "text",
+          "topic": "💼 Job postings and hiring opportunities in the ecosystem",
+          "slowmode": 300
+        }
+      ]
+    },
+    {
+      "name": "━━━ SUPPORT ━━━",
+      "channels": [
+        {
+          "name": "support",
+          "type": "forum",
+          "topic": "❓ Ask questions and get help from the community and team",
+          "tags": ["Question", "Resolved", "Bug", "How-to", "Integration", "Billing"]
+        },
+        {
+          "name": "faq",
+          "type": "text",
+          "topic": "📋 Frequently asked questions — check here first!",
+          "permissions": { "everyone": { "send_messages": false } },
+          "embed": {
+            "title": "📋 Frequently Asked Questions",
+            "color": "#3498DB",
+            "fields": [
+              { "name": "How do I get started?", "value": "Check our docs at #docs for quickstart guides." },
+              { "name": "How do I upgrade my plan?", "value": "Visit your dashboard → Settings → Billing." },
+              { "name": "How do I report a bug?", "value": "Post in #bug-reports with steps to reproduce." },
+              { "name": "How do I request a feature?", "value": "Post in #feature-requests and vote on others!" },
+              { "name": "Where is the API docs?", "value": "Check #docs for the full API reference." },
+              { "name": "I need urgent help!", "value": "Enterprise users: open a #tickets. Others: post in #support." }
+            ]
+          }
+        },
+        {
+          "name": "bug-reports",
+          "type": "forum",
+          "topic": "🐛 Report bugs here — include steps to reproduce!",
+          "tags": ["Bug", "Confirmed", "Fixed", "Cannot Reproduce", "Duplicate", "Critical"]
+        },
+        {
+          "name": "tickets",
+          "type": "text",
+          "topic": "🎫 Open private support tickets (Enterprise/Pro users)",
+          "slowmode": 60
+        }
+      ]
+    },
+    {
+      "name": "━━━ FEEDBACK ━━━",
+      "channels": [
+        {
+          "name": "feature-requests",
+          "type": "forum",
+          "topic": "💡 Suggest and vote on new features!",
+          "tags": ["New Feature", "Enhancement", "Integration", "UX/UI", "API", "Under Review", "Planned", "Shipped"]
+        },
+        {
+          "name": "feedback",
+          "type": "text",
+          "topic": "💬 General product feedback and suggestions",
+          "slowmode": 30
+        },
+        {
+          "name": "beta-testing",
+          "type": "text",
+          "topic": "🧪 Beta features and early access testing",
+          "permissions": { "role_locked": "Beta Tester" }
+        }
+      ]
+    },
+    {
+      "name": "━━━ DEV CORNER ━━━",
+      "channels": [
+        {
+          "name": "dev-talk",
+          "type": "text",
+          "topic": "👨‍💻 Technical discussions, integrations, and API usage"
+        },
+        {
+          "name": "api-help",
+          "type": "text",
+          "topic": "🔌 API questions, examples, and troubleshooting"
+        },
+        {
+          "name": "open-source",
+          "type": "text",
+          "topic": "📂 Open source contributions and discussions"
+        },
+        {
+          "name": "code-snippets",
+          "type": "text",
+          "topic": "📋 Share useful code snippets and integrations",
+          "slowmode": 15
+        }
+      ]
+    },
+    {
+      "name": "━━━ VOICE ━━━",
+      "channels": [
+        { "name": "🔊 General", "type": "voice", "user_limit": 15 },
+        { "name": "💬 Office Hours", "type": "voice", "user_limit": 25 },
+        { "name": "🤝 Co-working", "type": "voice", "user_limit": 10 },
+        { "name": "🎙️ Podcast/Interview", "type": "voice", "user_limit": 5 }
+      ]
+    },
+    {
+      "name": "━━━ STAFF ━━━",
+      "channels": [
+        {
+          "name": "team-chat",
+          "type": "text",
+          "topic": "🔒 Internal team discussion",
+          "permissions": { "staff_only": true }
+        },
+        {
+          "name": "support-queue",
+          "type": "text",
+          "topic": "📋 Unresolved support tickets and escalations",
+          "permissions": { "staff_only": true }
+        },
+        {
+          "name": "feedback-review",
+          "type": "text",
+          "topic": "📊 Review and triage community feedback",
+          "permissions": { "staff_only": true }
+        },
+        {
+          "name": "mod-logs",
+          "type": "text",
+          "topic": "📝 Moderation action logs",
+          "permissions": { "staff_only": true }
+        },
+        {
+          "name": "🔒 Team Voice",
+          "type": "voice",
+          "permissions": { "staff_only": true }
+        }
+      ]
+    }
+  ],
+  "roles": [
+    { "name": "👑 Founder", "color": "#E74C3C", "hoist": true, "position": 15, "permissions": ["ADMINISTRATOR"] },
+    { "name": "💼 Team", "color": "#E67E22", "hoist": true, "position": 14, "permissions": ["MANAGE_GUILD", "MANAGE_ROLES", "MANAGE_CHANNELS", "BAN_MEMBERS", "KICK_MEMBERS", "MANAGE_MESSAGES"] },
+    { "name": "🛡️ Moderator", "color": "#2ECC71", "hoist": true, "position": 13, "permissions": ["MANAGE_MESSAGES", "KICK_MEMBERS", "MUTE_MEMBERS"] },
+    { "name": "🌟 Community Lead", "color": "#1ABC9C", "hoist": true, "position": 12, "permissions": ["MANAGE_MESSAGES"] },
+    { "name": "🧪 Beta Tester", "color": "#9B59B6", "hoist": true, "position": 10 },
+    { "name": "💎 Enterprise", "color": "#F1C40F", "hoist": true, "position": 9 },
+    { "name": "⭐ Pro", "color": "#3498DB", "hoist": true, "position": 8 },
+    { "name": "🆓 Free", "color": "#99AAB5", "hoist": false, "position": 7 },
+    { "name": "🏆 Contributor", "color": "#E67E22", "hoist": true, "position": 6 },
+    { "name": "🔧 Developer", "color": "#7289DA", "hoist": false, "position": 4 },
+    { "name": "🎨 Designer", "color": "#E91E63", "hoist": false, "position": 4 },
+    { "name": "📊 Product Manager", "color": "#00BCD4", "hoist": false, "position": 4 },
+    { "name": "🚀 Founder Role", "color": "#FF5722", "hoist": false, "position": 4 },
+    { "name": "📢 Updates", "color": "#99AAB5", "hoist": false, "position": 1 },
+    { "name": "🐛 Bug Fixes", "color": "#99AAB5", "hoist": false, "position": 1 },
+    { "name": "🗺️ Roadmap", "color": "#99AAB5", "hoist": false, "position": 1 },
+    { "name": "📝 Blog Posts", "color": "#99AAB5", "hoist": false, "position": 1 },
+    { "name": "🔇 Muted", "color": "#95A5A6", "hoist": false, "position": 0, "permissions_deny": ["SEND_MESSAGES", "SPEAK", "ADD_REACTIONS"] }
+  ]
+}

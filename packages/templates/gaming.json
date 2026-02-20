@@ -1,0 +1,299 @@
+{
+  "id": "gaming",
+  "name": "Gaming Community",
+  "description": "Complete gaming server with LFG, tournaments, clips, voice lobbies, and engagement features. Inspired by AAA game communities.",
+  "settings": {
+    "verification_level": 1,
+    "default_notifications": 1,
+    "explicit_content_filter": 1
+  },
+  "categories": [
+    {
+      "name": "━━━ WELCOME ━━━",
+      "channels": [
+        {
+          "name": "rules",
+          "type": "text",
+          "topic": "📜 Server rules — Read before participating!",
+          "slowmode": 0,
+          "permissions": { "everyone": { "send_messages": false } },
+          "embed": {
+            "title": "📜 Server Rules",
+            "description": "Welcome! Please read and follow these rules to keep our community great.",
+            "color": "#5865F2",
+            "fields": [
+              { "name": "1️⃣ Be Respectful", "value": "Treat everyone with respect. No harassment, hate speech, or personal attacks." },
+              { "name": "2️⃣ No Spam", "value": "No spam, self-promotion, or excessive caps. Use the right channels for your content." },
+              { "name": "3️⃣ No NSFW", "value": "Keep all content SFW. This includes profile pictures, usernames, and status." },
+              { "name": "4️⃣ English in General", "value": "Use English in general channels. Other languages welcome in designated channels." },
+              { "name": "5️⃣ No Cheating/Exploits", "value": "Discussion of cheats, hacks, or exploits is strictly prohibited." },
+              { "name": "6️⃣ Listen to Staff", "value": "Follow staff instructions. If you disagree, DM a moderator privately." },
+              { "name": "7️⃣ No Drama", "value": "Keep personal conflicts out of public channels. Use DMs or contact staff." },
+              { "name": "8️⃣ Have Fun!", "value": "This is a gaming community — enjoy yourself and make friends! 🎮" }
+            ],
+            "footer": "Breaking rules may result in mute, kick, or ban."
+          }
+        },
+        {
+          "name": "welcome",
+          "type": "text",
+          "topic": "👋 Welcome new members! Introduce yourself and grab some roles.",
+          "slowmode": 10
+        },
+        {
+          "name": "roles",
+          "type": "text",
+          "topic": "🎭 React to pick your roles!",
+          "permissions": { "everyone": { "send_messages": false } },
+          "embed": {
+            "title": "🎭 Pick Your Roles",
+            "description": "React to the emojis below to get your roles!",
+            "color": "#E74C3C",
+            "fields": [
+              { "name": "🎮 Platforms", "value": "🖥️ PC • 🎮 Console • 📱 Mobile" },
+              { "name": "🌍 Region", "value": "🇺🇸 NA • 🇪🇺 EU • 🇧🇷 SA • 🌏 Asia • 🇦🇺 OCE" },
+              { "name": "🔔 Pings", "value": "📢 Announcements • 🎉 Events • 🏆 Tournaments • 🎁 Giveaways" }
+            ]
+          }
+        },
+        {
+          "name": "announcements",
+          "type": "announcement",
+          "topic": "📢 Official announcements and important updates",
+          "permissions": { "everyone": { "send_messages": false } }
+        }
+      ]
+    },
+    {
+      "name": "━━━ COMMUNITY ━━━",
+      "channels": [
+        {
+          "name": "general-chat",
+          "type": "text",
+          "topic": "💬 General discussion — anything goes (within rules)!",
+          "slowmode": 3
+        },
+        {
+          "name": "introductions",
+          "type": "text",
+          "topic": "👤 Tell us about yourself! What games do you play?",
+          "slowmode": 30
+        },
+        {
+          "name": "memes",
+          "type": "text",
+          "topic": "😂 Share your best gaming memes",
+          "slowmode": 10
+        },
+        {
+          "name": "off-topic",
+          "type": "text",
+          "topic": "🌐 Talk about anything non-gaming related"
+        },
+        {
+          "name": "media-share",
+          "type": "text",
+          "topic": "📸 Share screenshots, art, wallpapers, and cool finds",
+          "slowmode": 15
+        },
+        {
+          "name": "pet-pics",
+          "type": "text",
+          "topic": "🐾 Show off your pets! (best channel, obviously)",
+          "slowmode": 15
+        }
+      ]
+    },
+    {
+      "name": "━━━ GAMING ━━━",
+      "channels": [
+        {
+          "name": "game-discussion",
+          "type": "text",
+          "topic": "🎮 Discuss games, strategies, builds, and tips"
+        },
+        {
+          "name": "lfg",
+          "type": "text",
+          "topic": "🔍 Looking for group! Post here to find teammates",
+          "slowmode": 5,
+          "embed": {
+            "title": "🔍 Looking for Group (LFG)",
+            "description": "Use this format to find teammates:",
+            "color": "#2ECC71",
+            "fields": [
+              { "name": "Format", "value": "**Game:** [name]\n**Region:** [NA/EU/etc]\n**Platform:** [PC/Console]\n**Players needed:** [#]\n**Rank/Level:** [optional]\n**Notes:** [mic required, casual/competitive, etc]" }
+            ]
+          }
+        },
+        {
+          "name": "clips-highlights",
+          "type": "text",
+          "topic": "🎬 Share your best gaming clips and highlights!",
+          "slowmode": 15
+        },
+        {
+          "name": "tournaments",
+          "type": "text",
+          "topic": "🏆 Tournament announcements, brackets, and results",
+          "permissions": { "everyone": { "send_messages": false } },
+          "embed": {
+            "title": "🏆 Tournaments",
+            "description": "Stay tuned for upcoming tournament announcements! Sign-ups will be posted here.",
+            "color": "#F1C40F"
+          }
+        },
+        {
+          "name": "patch-notes",
+          "type": "text",
+          "topic": "📋 Game updates, patch notes, and meta changes",
+          "permissions": { "everyone": { "send_messages": false } }
+        },
+        {
+          "name": "guides-tips",
+          "type": "forum",
+          "topic": "📚 Share and discuss guides, builds, and strategies",
+          "tags": ["Guide", "Build", "Tips", "Strategy", "Tier List", "Beginner"]
+        }
+      ]
+    },
+    {
+      "name": "━━━ ENGAGEMENT ━━━",
+      "channels": [
+        {
+          "name": "daily-question",
+          "type": "text",
+          "topic": "❓ New question every day! Let's get to know each other.",
+          "slowmode": 10,
+          "embed": {
+            "title": "❓ Daily Question",
+            "description": "A new question is posted every day! Share your answer and react to others.",
+            "color": "#9B59B6",
+            "fields": [
+              { "name": "Today's Question", "value": "What's the game that got you into gaming? 🎮" }
+            ]
+          }
+        },
+        {
+          "name": "polls",
+          "type": "text",
+          "topic": "📊 Vote on community polls and decisions",
+          "slowmode": 30
+        },
+        {
+          "name": "counting",
+          "type": "text",
+          "topic": "🔢 Count together! Don't break the chain!",
+          "slowmode": 3
+        },
+        {
+          "name": "giveaways",
+          "type": "text",
+          "topic": "🎁 Free stuff! Keep an eye out for giveaway announcements.",
+          "permissions": { "everyone": { "send_messages": false } }
+        }
+      ]
+    },
+    {
+      "name": "━━━ SUPPORT ━━━",
+      "channels": [
+        {
+          "name": "help",
+          "type": "text",
+          "topic": "❓ Need help? Ask here! Community members and staff will assist you."
+        },
+        {
+          "name": "faq",
+          "type": "text",
+          "topic": "📋 Frequently asked questions",
+          "permissions": { "everyone": { "send_messages": false } },
+          "embed": {
+            "title": "📋 Frequently Asked Questions",
+            "color": "#3498DB",
+            "fields": [
+              { "name": "How do I get roles?", "value": "Head to #roles and react to the messages!" },
+              { "name": "How do I report someone?", "value": "DM a moderator or use #tickets" },
+              { "name": "How do I join tournaments?", "value": "Check #tournaments for signup links" },
+              { "name": "Can I stream here?", "value": "Yes! Use the streaming voice channels." }
+            ]
+          }
+        },
+        {
+          "name": "tickets",
+          "type": "text",
+          "topic": "🎫 Open a support ticket (bot required for full functionality)",
+          "slowmode": 30
+        }
+      ]
+    },
+    {
+      "name": "━━━ VOICE LOBBIES ━━━",
+      "channels": [
+        { "name": "🔊 General Voice", "type": "voice", "user_limit": 15 },
+        { "name": "🎮 Gaming 1", "type": "voice", "user_limit": 5 },
+        { "name": "🎮 Gaming 2", "type": "voice", "user_limit": 5 },
+        { "name": "🎮 Gaming 3", "type": "voice", "user_limit": 5 },
+        { "name": "🏆 Tournament Lobby", "type": "voice", "user_limit": 10 },
+        { "name": "🎥 Streaming", "type": "voice", "user_limit": 2 },
+        { "name": "🎵 Music", "type": "voice", "user_limit": 10 },
+        { "name": "😴 AFK", "type": "voice", "user_limit": 0 }
+      ]
+    },
+    {
+      "name": "━━━ STAFF ━━━",
+      "channels": [
+        {
+          "name": "staff-chat",
+          "type": "text",
+          "topic": "🔒 Staff discussion — private",
+          "permissions": { "staff_only": true }
+        },
+        {
+          "name": "mod-logs",
+          "type": "text",
+          "topic": "📝 Moderation action logs",
+          "permissions": { "staff_only": true }
+        },
+        {
+          "name": "staff-announcements",
+          "type": "text",
+          "topic": "📢 Internal staff announcements",
+          "permissions": { "staff_only": true }
+        },
+        {
+          "name": "bot-commands",
+          "type": "text",
+          "topic": "🤖 Bot testing and commands",
+          "permissions": { "staff_only": true }
+        },
+        {
+          "name": "🔒 Staff Voice",
+          "type": "voice",
+          "permissions": { "staff_only": true }
+        }
+      ]
+    }
+  ],
+  "roles": [
+    { "name": "👑 Owner", "color": "#E74C3C", "hoist": true, "position": 15, "permissions": ["ADMINISTRATOR"] },
+    { "name": "⚔️ Admin", "color": "#E67E22", "hoist": true, "position": 14, "permissions": ["MANAGE_GUILD", "MANAGE_ROLES", "MANAGE_CHANNELS", "BAN_MEMBERS", "KICK_MEMBERS", "MANAGE_MESSAGES"] },
+    { "name": "🛡️ Moderator", "color": "#2ECC71", "hoist": true, "position": 13, "permissions": ["MANAGE_MESSAGES", "KICK_MEMBERS", "MUTE_MEMBERS", "MANAGE_THREADS"] },
+    { "name": "🔧 Helper", "color": "#1ABC9C", "hoist": true, "position": 12, "permissions": ["MANAGE_MESSAGES"] },
+    { "name": "💎 VIP", "color": "#9B59B6", "hoist": true, "position": 10 },
+    { "name": "🎖️ OG Member", "color": "#F39C12", "hoist": true, "position": 9 },
+    { "name": "🏆 Tournament Winner", "color": "#F1C40F", "hoist": true, "position": 8 },
+    { "name": "🎮 Gamer", "color": "#3498DB", "hoist": false, "position": 5 },
+    { "name": "🖥️ PC", "color": "#7289DA", "hoist": false, "position": 3 },
+    { "name": "🎮 Console", "color": "#43B581", "hoist": false, "position": 3 },
+    { "name": "📱 Mobile", "color": "#FAA61A", "hoist": false, "position": 3 },
+    { "name": "🇺🇸 NA", "color": "#99AAB5", "hoist": false, "position": 2 },
+    { "name": "🇪🇺 EU", "color": "#99AAB5", "hoist": false, "position": 2 },
+    { "name": "🇧🇷 SA", "color": "#99AAB5", "hoist": false, "position": 2 },
+    { "name": "🌏 Asia", "color": "#99AAB5", "hoist": false, "position": 2 },
+    { "name": "📢 Announcements", "color": "#99AAB5", "hoist": false, "position": 1 },
+    { "name": "🎉 Events", "color": "#99AAB5", "hoist": false, "position": 1 },
+    { "name": "🏆 Tournaments", "color": "#99AAB5", "hoist": false, "position": 1 },
+    { "name": "🎁 Giveaways", "color": "#99AAB5", "hoist": false, "position": 1 },
+    { "name": "🔇 Muted", "color": "#95A5A6", "hoist": false, "position": 0, "permissions_deny": ["SEND_MESSAGES", "SPEAK", "ADD_REACTIONS"] }
+  ]
+}

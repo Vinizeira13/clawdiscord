@@ -1,0 +1,27 @@
+{
+  "name": "clawdiscord",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AAAS - Automate professional Discord server setup in seconds",
+  "workspaces": [
+    "packages/cli",
+    "packages/bot",
+    "packages/templates",
+    "packages/web"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "cli": "npm run dev --workspace=packages/cli",
+    "bot": "npm run dev --workspace=packages/bot"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "packageManager": "npm@10.0.0"
+}

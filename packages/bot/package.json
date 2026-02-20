@@ -1,0 +1,21 @@
+{
+  "name": "@clawdiscord/bot",
+  "version": "0.1.0",
+  "description": "Discord bot that applies server templates",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.16.0",
+    "@supabase/supabase-js": "^2.47.0",
+    "dotenv": "^16.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  }
+}
