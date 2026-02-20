@@ -7,10 +7,19 @@ import {
   SlashCommandBuilder,
   EmbedBuilder,
   PermissionFlagsBits,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ComponentType,
   type ChatInputCommandInteraction,
+  type ButtonInteraction,
 } from 'discord.js';
 import { config } from 'dotenv';
+import { readFileSync, readdirSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { handleGuildCreate } from './events/guildCreate.js';
+import { SetupService } from './services/setup.js';
 
 config();
 
@@ -45,6 +54,27 @@ const commands = [
     )
     .addSubcommand((sub) =>
       sub.setName('templates').setDescription('List all available templates')
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName('setup')
+        .setDescription('Setup this server with a professional template')
+        .addStringOption((opt) =>
+          opt
+            .setName('template')
+            .setDescription('Template to apply')
+            .setRequired(true)
+            .addChoices(
+              { name: 'Gaming Community', value: 'gaming' },
+              { name: 'SaaS Community', value: 'saas' },
+              { name: 'General Community', value: 'general' }
+            )
+        )
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName('reset')
+        .setDescription('Remove all channels and roles created by ClawDiscord')
     )
     .toJSON(),
 ];
@@ -90,6 +120,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
         break;
       case 'templates':
         await handleTemplates(interaction);
+        break;
+      case 'setup':
+        await handleSetup(interaction);
+        break;
+      case 'reset':
+        await handleReset(interaction);
         break;
     }
   } catch (err) {
@@ -202,6 +238,270 @@ async function handleTemplates(interaction: ChatInputCommandInteraction) {
     .setFooter({ text: 'ClawDiscord — Automate your Discord in seconds' });
 
   await interaction.reply({ embeds: [embed] });
+}
+
+// ─── TEMPLATE LOADER ───
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+function getTemplatesDir(): string {
+  const candidates = [
+    join(__dirname, '..', '..', '..', 'templates'),
+    join(__dirname, '..', '..', 'templates'),
+    join(__dirname, '..', 'templates'),
+  ];
+  for (const dir of candidates) {
+    try {
+      const files = readdirSync(dir);
+      if (files.some(f => f.endsWith('.json') && !f.startsWith('_') && f !== 'package.json')) return dir;
+    } catch { /* skip */ }
+  }
+  return candidates[0];
+}
+
+function loadTemplate(id: string): Record<string, unknown> | null {
+  try {
+    const dir = getTemplatesDir();
+    const raw = readFileSync(join(dir, `${id}.json`), 'utf-8');
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+// ─── ACTIVE SETUPS TRACKER ───
+const activeSetups = new Set<string>();
+
+// ─── /clawdiscord setup <template> ───
+async function handleSetup(interaction: ChatInputCommandInteraction) {
+  const guild = interaction.guild;
+  if (!guild) return interaction.reply({ content: 'This command only works in a server.', ephemeral: true });
+
+  // Check permissions
+  const member = interaction.member;
+  if (!member || !interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
+    return interaction.reply({ content: '❌ You need **Administrator** permission to run setup.', ephemeral: true });
+  }
+
+  // Check if setup already running
+  if (activeSetups.has(guild.id)) {
+    return interaction.reply({ content: '⏳ A setup is already running on this server. Please wait.', ephemeral: true });
+  }
+
+  const templateId = interaction.options.getString('template', true);
+  const template = loadTemplate(templateId);
+
+  if (!template) {
+    return interaction.reply({ content: `❌ Template "${templateId}" not found.`, ephemeral: true });
+  }
+
+  // Confirmation embed
+  const categories = (template.categories as Array<{ channels: unknown[] }>);
+  const roles = template.roles as unknown[];
+  const totalChannels = categories.reduce((acc, c) => acc + c.channels.length, 0);
+  const estTime = Math.ceil((totalChannels + roles.length) * 0.05);
+
+  const confirmEmbed = new EmbedBuilder()
+    .setTitle(`⚠️ Confirm Setup: ${template.name}`)
+    .setColor(0xf39c12)
+    .setDescription('This will create new categories, channels, roles, and embeds in your server.\n\n**Existing channels/roles will NOT be deleted.**')
+    .addFields(
+      { name: '📁 Categories', value: categories.length.toString(), inline: true },
+      { name: '💬 Channels', value: totalChannels.toString(), inline: true },
+      { name: '👥 Roles', value: roles.length.toString(), inline: true },
+      { name: '⏱️ Estimated Time', value: `~${estTime}s`, inline: true },
+    )
+    .setFooter({ text: 'This action cannot be easily undone. Use /clawdiscord reset to remove created items.' });
+
+  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    new ButtonBuilder().setCustomId('setup_confirm').setLabel('✅ Apply Setup').setStyle(ButtonStyle.Success),
+    new ButtonBuilder().setCustomId('setup_cancel').setLabel('❌ Cancel').setStyle(ButtonStyle.Danger),
+  );
+
+  const response = await interaction.reply({ embeds: [confirmEmbed], components: [row], fetchReply: true });
+
+  // Wait for button click
+  try {
+    const btnInteraction = await response.awaitMessageComponent({
+      componentType: ComponentType.Button,
+      filter: (i: ButtonInteraction) => i.user.id === interaction.user.id,
+      time: 30_000,
+    });
+
+    if (btnInteraction.customId === 'setup_cancel') {
+      await btnInteraction.update({ content: '❌ Setup cancelled.', embeds: [], components: [] });
+      return;
+    }
+
+    // Start setup
+    activeSetups.add(guild.id);
+
+    const progressEmbed = new EmbedBuilder()
+      .setTitle('🔧 Setting up your server...')
+      .setColor(0x5865f2)
+      .setDescription('Phase 1/4: Creating roles...')
+      .setFooter({ text: 'Please wait, this may take a moment.' });
+
+    await btnInteraction.update({ embeds: [progressEmbed], components: [] });
+
+    const setupService = new SetupService(
+      guild.id,
+      template as any,
+      process.env.DISCORD_TOKEN!,
+      async (phase, current, total) => {
+        const phaseNames: Record<string, string> = {
+          roles: '👥 Creating roles',
+          channels: '📁 Creating categories & channels',
+          embeds: '📝 Sending embeds',
+        };
+        const phaseName = phaseNames[phase] || phase;
+        const phaseNum = phase === 'roles' ? 1 : phase === 'channels' ? 2 : phase === 'embeds' ? 3 : 4;
+
+        // Update progress every 3 items to avoid rate limits
+        if (current % 3 === 0 || current === total) {
+          try {
+            progressEmbed.setDescription(`Phase ${phaseNum}/4: ${phaseName}... (${current}/${total})`);
+            await interaction.editReply({ embeds: [progressEmbed] });
+          } catch { /* ignore edit failures */ }
+        }
+      }
+    );
+
+    const result = await setupService.execute();
+    activeSetups.delete(guild.id);
+
+    const resultEmbed = new EmbedBuilder()
+      .setTitle(result.success ? '✅ Setup Complete!' : '⚠️ Setup Completed with Errors')
+      .setColor(result.success ? 0x2ecc71 : 0xf39c12)
+      .addFields(
+        { name: '👥 Roles Created', value: result.stats.roles.toString(), inline: true },
+        { name: '📁 Categories', value: result.stats.categories.toString(), inline: true },
+        { name: '💬 Channels', value: result.stats.channels.toString(), inline: true },
+        { name: '📝 Embeds Sent', value: result.stats.embeds.toString(), inline: true },
+        { name: '⏱️ Duration', value: `${(result.duration / 1000).toFixed(1)}s`, inline: true },
+      )
+      .setFooter({ text: 'ClawDiscord — Automate your Discord in seconds' })
+      .setTimestamp();
+
+    if (result.errors.length > 0) {
+      const errorText = result.errors.slice(0, 5).join('\n');
+      resultEmbed.addFields({ name: '❌ Errors', value: `\`\`\`\n${errorText}\n\`\`\`` });
+    }
+
+    await interaction.editReply({ embeds: [resultEmbed] });
+  } catch (error) {
+    activeSetups.delete(guild.id);
+    if ((error as Error).message?.includes('time')) {
+      await interaction.editReply({ content: '⏰ Setup timed out. Run the command again.', embeds: [], components: [] });
+    } else {
+      throw error;
+    }
+  }
+}
+
+// ─── /clawdiscord reset ───
+async function handleReset(interaction: ChatInputCommandInteraction) {
+  const guild = interaction.guild;
+  if (!guild) return interaction.reply({ content: 'This command only works in a server.', ephemeral: true });
+
+  if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
+    return interaction.reply({ content: '❌ You need **Administrator** permission to reset.', ephemeral: true });
+  }
+
+  const warnEmbed = new EmbedBuilder()
+    .setTitle('⚠️ Reset Server — Are you sure?')
+    .setColor(0xe74c3c)
+    .setDescription(
+      'This will **delete ALL non-default channels and roles** from this server.\n\n' +
+      '**This action is irreversible!**\n\n' +
+      'Only the @everyone role and system channels will be preserved.'
+    );
+
+  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    new ButtonBuilder().setCustomId('reset_confirm').setLabel('🗑️ Yes, Reset Everything').setStyle(ButtonStyle.Danger),
+    new ButtonBuilder().setCustomId('reset_cancel').setLabel('❌ Cancel').setStyle(ButtonStyle.Secondary),
+  );
+
+  const response = await interaction.reply({ embeds: [warnEmbed], components: [row], fetchReply: true });
+
+  try {
+    const btnInteraction = await response.awaitMessageComponent({
+      componentType: ComponentType.Button,
+      filter: (i: ButtonInteraction) => i.user.id === interaction.user.id,
+      time: 15_000,
+    });
+
+    if (btnInteraction.customId === 'reset_cancel') {
+      await btnInteraction.update({ content: '❌ Reset cancelled.', embeds: [], components: [] });
+      return;
+    }
+
+    await btnInteraction.update({ content: '🗑️ Resetting server... This may take a moment.', embeds: [], components: [] });
+
+    const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN!);
+    let deletedChannels = 0;
+    let deletedRoles = 0;
+    const errors: string[] = [];
+
+    // Delete all non-category channels, then categories
+    const channels = (await rest.get(Routes.guildChannels(guild.id))) as Array<{ id: string; name: string; type: number }>;
+
+    // Delete channels first (non-categories)
+    for (const ch of channels.filter(c => c.type !== 4)) {
+      try {
+        await rest.delete(Routes.channel(ch.id));
+        deletedChannels++;
+        await new Promise(r => setTimeout(r, 50));
+      } catch (e: unknown) {
+        errors.push(`Channel "${ch.name}": ${(e as Error).message}`);
+      }
+    }
+
+    // Then delete empty categories
+    for (const ch of channels.filter(c => c.type === 4)) {
+      try {
+        await rest.delete(Routes.channel(ch.id));
+        deletedChannels++;
+        await new Promise(r => setTimeout(r, 50));
+      } catch (e: unknown) {
+        errors.push(`Category "${ch.name}": ${(e as Error).message}`);
+      }
+    }
+
+    // Delete non-default roles (skip @everyone which has id === guild.id, and bot's managed roles)
+    const roles = (await rest.get(Routes.guildRoles(guild.id))) as Array<{ id: string; name: string; managed: boolean }>;
+    for (const role of roles) {
+      if (role.id === guild.id || role.managed) continue;
+      try {
+        await rest.delete(Routes.guildRole(guild.id, role.id));
+        deletedRoles++;
+        await new Promise(r => setTimeout(r, 50));
+      } catch (e: unknown) {
+        errors.push(`Role "${role.name}": ${(e as Error).message}`);
+      }
+    }
+
+    const resultEmbed = new EmbedBuilder()
+      .setTitle('🗑️ Reset Complete')
+      .setColor(0x2ecc71)
+      .addFields(
+        { name: 'Channels Deleted', value: deletedChannels.toString(), inline: true },
+        { name: 'Roles Deleted', value: deletedRoles.toString(), inline: true },
+      )
+      .setFooter({ text: 'Server is now clean. Run /clawdiscord setup to apply a new template.' });
+
+    if (errors.length > 0) {
+      resultEmbed.addFields({ name: 'Errors', value: errors.slice(0, 5).join('\n').slice(0, 1024) });
+    }
+
+    await interaction.editReply({ content: null, embeds: [resultEmbed] });
+  } catch (error) {
+    if ((error as Error).message?.includes('time')) {
+      await interaction.editReply({ content: '⏰ Reset timed out.', embeds: [], components: [] });
+    } else {
+      throw error;
+    }
+  }
 }
 
 // ─── LOGIN ───

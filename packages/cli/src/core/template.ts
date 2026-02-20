@@ -69,9 +69,26 @@ export interface ServerTemplate {
 }
 
 function getTemplatesDir(): string {
-  // Resolve relative to the package
   const currentDir = dirname(fileURLToPath(import.meta.url));
-  return join(currentDir, '..', '..', '..', 'templates');
+
+  // Try multiple paths: monorepo dev → npm published → fallback
+  const candidates = [
+    join(currentDir, '..', '..', '..', 'templates'),      // monorepo: packages/cli/dist/core → packages/templates
+    join(currentDir, '..', 'templates'),                    // npm published: dist/core → templates (bundled)
+    join(currentDir, '..', '..', 'templates'),              // alt structure
+  ];
+
+  for (const dir of candidates) {
+    try {
+      readdirSync(dir);
+      return dir;
+    } catch {
+      // try next
+    }
+  }
+
+  // Fallback to first (will error naturally if missing)
+  return candidates[0];
 }
 
 export function loadTemplate(id: string): ServerTemplate | null {

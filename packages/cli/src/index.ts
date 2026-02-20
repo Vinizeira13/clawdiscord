@@ -40,4 +40,27 @@ program
     listTemplates();
   });
 
+program
+  .command('invite')
+  .description('Get the bot invite link')
+  .action(async () => {
+    const { logger } = await import('./utils/logger.js');
+    const { DiscordClient } = await import('./core/discord.js');
+    const clientId = process.env.DISCORD_CLIENT_ID || '1474410305609273598';
+    const url = DiscordClient.generateInviteUrl(clientId);
+    logger.banner();
+    logger.info('🔗 Bot Invite Link:');
+    logger.info(`   ${url}\n`);
+    logger.dim('Open in browser → Select your server → Authorize');
+  });
+
+program
+  .command('reset')
+  .description('Remove all channels and roles from a server (cleanup)')
+  .option('-g, --guild <guildId>', 'Discord server ID to reset')
+  .action(async (options: { guild?: string }) => {
+    const { resetCommand } = await import('./commands/reset.js');
+    await resetCommand(options);
+  });
+
 program.parse();
