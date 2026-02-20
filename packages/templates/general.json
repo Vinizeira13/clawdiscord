@@ -15,20 +15,48 @@
           "name": "rules",
           "type": "text",
           "topic": "📜 Community rules and guidelines",
-          "permissions": { "everyone": { "send_messages": false } },
+          "permissions": {
+            "everyone": {
+              "send_messages": false
+            }
+          },
           "embed": {
             "title": "📜 Community Rules",
             "description": "Please follow these rules to keep our community welcoming for everyone!",
             "color": "#5865F2",
             "fields": [
-              { "name": "1. Be Kind & Respectful", "value": "Treat everyone with dignity. No bullying, harassment, or hate speech of any kind." },
-              { "name": "2. Keep It Clean", "value": "No NSFW content. This is an all-ages community." },
-              { "name": "3. No Spam", "value": "No spam, excessive tagging, or unsolicited DMs to members." },
-              { "name": "4. Right Channel, Right Content", "value": "Post in the appropriate channel. Off-topic has its own home!" },
-              { "name": "5. No Advertising", "value": "No self-promo or ads without permission. Share in #self-promo if relevant." },
-              { "name": "6. Listen to Staff", "value": "Staff decisions are final. Appeal via DM if you disagree." },
-              { "name": "7. Privacy Matters", "value": "Don't share others' personal info. Respect boundaries." },
-              { "name": "8. Common Sense", "value": "If you wouldn't say it to someone's face, don't type it here." }
+              {
+                "name": "1. Be Kind & Respectful",
+                "value": "Treat everyone with dignity. No bullying, harassment, or hate speech of any kind."
+              },
+              {
+                "name": "2. Keep It Clean",
+                "value": "No NSFW content. This is an all-ages community."
+              },
+              {
+                "name": "3. No Spam",
+                "value": "No spam, excessive tagging, or unsolicited DMs to members."
+              },
+              {
+                "name": "4. Right Channel, Right Content",
+                "value": "Post in the appropriate channel. Off-topic has its own home!"
+              },
+              {
+                "name": "5. No Advertising",
+                "value": "No self-promo or ads without permission. Share in #self-promo if relevant."
+              },
+              {
+                "name": "6. Listen to Staff",
+                "value": "Staff decisions are final. Appeal via DM if you disagree."
+              },
+              {
+                "name": "7. Privacy Matters",
+                "value": "Don't share others' personal info. Respect boundaries."
+              },
+              {
+                "name": "8. Common Sense",
+                "value": "If you wouldn't say it to someone's face, don't type it here."
+              }
             ],
             "footer": "Violations may result in warnings, mutes, or bans. Have fun! 🎉"
           }
@@ -43,16 +71,32 @@
           "name": "roles",
           "type": "text",
           "topic": "🎭 Pick your color, pronoun, and interest roles!",
-          "permissions": { "everyone": { "send_messages": false } },
+          "permissions": {
+            "everyone": {
+              "send_messages": false
+            }
+          },
           "embed": {
             "title": "🎭 Self-Assign Roles",
             "description": "React below to customize your profile!",
             "color": "#E74C3C",
             "fields": [
-              { "name": "🎨 Colors", "value": "🔴 Red • 🟠 Orange • 🟡 Yellow • 🟢 Green • 🔵 Blue • 🟣 Purple • 🩷 Pink" },
-              { "name": "💬 Pronouns", "value": "He/Him • She/Her • They/Them • Ask Me" },
-              { "name": "🎯 Interests", "value": "🎮 Gaming • 🎵 Music • 🎬 Movies • 📚 Books • 💻 Tech • 🎨 Art • 📷 Photography • 🏋️ Fitness • 🍳 Cooking • ✈️ Travel" },
-              { "name": "🔔 Pings", "value": "📢 Announcements • 🎉 Events • 🎁 Giveaways • 🎮 Game Night" }
+              {
+                "name": "🎨 Colors",
+                "value": "🔴 Red • 🟠 Orange • 🟡 Yellow • 🟢 Green • 🔵 Blue • 🟣 Purple • 🩷 Pink"
+              },
+              {
+                "name": "💬 Pronouns",
+                "value": "He/Him • She/Her • They/Them • Ask Me"
+              },
+              {
+                "name": "🎯 Interests",
+                "value": "🎮 Gaming • 🎵 Music • 🎬 Movies • 📚 Books • 💻 Tech • 🎨 Art • 📷 Photography • 🏋️ Fitness • 🍳 Cooking • ✈️ Travel"
+              },
+              {
+                "name": "🔔 Pings",
+                "value": "📢 Announcements • 🎉 Events • 🎁 Giveaways • 🎮 Game Night"
+              }
             ]
           }
         },
@@ -60,13 +104,21 @@
           "name": "announcements",
           "type": "announcement",
           "topic": "📢 Official community announcements",
-          "permissions": { "everyone": { "send_messages": false } }
+          "permissions": {
+            "everyone": {
+              "send_messages": false
+            }
+          }
         },
         {
           "name": "server-updates",
           "type": "text",
           "topic": "🔄 Server changes, new features, and improvements",
-          "permissions": { "everyone": { "send_messages": false } }
+          "permissions": {
+            "everyone": {
+              "send_messages": false
+            }
+          }
         }
       ]
     },
@@ -204,7 +256,10 @@
             "description": "A new question is posted every day! Share your answer below.",
             "color": "#9B59B6",
             "fields": [
-              { "name": "Today's Question", "value": "If you could live in any fictional universe, which one would you choose and why?" }
+              {
+                "name": "Today's Question",
+                "value": "If you could live in any fictional universe, which one would you choose and why?"
+              }
             ]
           }
         },
@@ -218,15 +273,28 @@
           "name": "events",
           "type": "text",
           "topic": "🎉 Community events, game nights, movie nights, and more!",
-          "permissions": { "everyone": { "send_messages": false } },
+          "permissions": {
+            "everyone": {
+              "send_messages": false
+            }
+          },
           "embed": {
             "title": "🎉 Upcoming Events",
             "description": "Stay tuned for community events! React to 🔔 to get pinged for events.",
             "color": "#F1C40F",
             "fields": [
-              { "name": "Weekly Game Night", "value": "Every Friday at 8PM EST" },
-              { "name": "Movie Night", "value": "Every other Saturday at 9PM EST" },
-              { "name": "Community Hangout", "value": "Sundays — drop in anytime!" }
+              {
+                "name": "Weekly Game Night",
+                "value": "Every Friday at 8PM EST"
+              },
+              {
+                "name": "Movie Night",
+                "value": "Every other Saturday at 9PM EST"
+              },
+              {
+                "name": "Community Hangout",
+                "value": "Sundays — drop in anytime!"
+              }
             ]
           }
         },
@@ -240,7 +308,11 @@
           "name": "giveaways",
           "type": "text",
           "topic": "🎁 Free stuff! Giveaways and contests.",
-          "permissions": { "everyone": { "send_messages": false } }
+          "permissions": {
+            "everyone": {
+              "send_messages": false
+            }
+          }
         }
       ]
     },
@@ -256,7 +328,13 @@
           "name": "suggestions",
           "type": "forum",
           "topic": "💡 Suggest improvements for the server!",
-          "tags": ["Channel Idea", "Event Idea", "Bot Suggestion", "Rule Change", "Other"]
+          "tags": [
+            "Channel Idea",
+            "Event Idea",
+            "Bot Suggestion",
+            "Rule Change",
+            "Other"
+          ]
         },
         {
           "name": "report",
@@ -269,13 +347,41 @@
     {
       "name": "━━━ VOICE HANGOUTS ━━━",
       "channels": [
-        { "name": "🔊 General Chat", "type": "voice", "user_limit": 20 },
-        { "name": "🎵 Music Lounge", "type": "voice", "user_limit": 15 },
-        { "name": "🎮 Game Night", "type": "voice", "user_limit": 10 },
-        { "name": "📖 Study/Work", "type": "voice", "user_limit": 8 },
-        { "name": "🤫 Chill Zone", "type": "voice", "user_limit": 5 },
-        { "name": "🎬 Movie Night", "type": "voice", "user_limit": 25 },
-        { "name": "😴 AFK", "type": "voice", "user_limit": 0 }
+        {
+          "name": "🔊 General Chat",
+          "type": "voice",
+          "user_limit": 20
+        },
+        {
+          "name": "🎵 Music Lounge",
+          "type": "voice",
+          "user_limit": 15
+        },
+        {
+          "name": "🎮 Game Night",
+          "type": "voice",
+          "user_limit": 10
+        },
+        {
+          "name": "📖 Study/Work",
+          "type": "voice",
+          "user_limit": 8
+        },
+        {
+          "name": "🤫 Chill Zone",
+          "type": "voice",
+          "user_limit": 5
+        },
+        {
+          "name": "🎬 Movie Night",
+          "type": "voice",
+          "user_limit": 25
+        },
+        {
+          "name": "😴 AFK",
+          "type": "voice",
+          "user_limit": 0
+        }
       ]
     },
     {
@@ -285,65 +391,351 @@
           "name": "staff-chat",
           "type": "text",
           "topic": "🔒 Staff discussion",
-          "permissions": { "staff_only": true }
+          "permissions": {
+            "staff_only": true
+          }
         },
         {
           "name": "mod-logs",
           "type": "text",
           "topic": "📝 Moderation actions and logs",
-          "permissions": { "staff_only": true }
+          "permissions": {
+            "staff_only": true
+          }
         },
         {
           "name": "staff-announcements",
           "type": "text",
           "topic": "📢 Internal announcements for staff",
-          "permissions": { "staff_only": true }
+          "permissions": {
+            "staff_only": true
+          }
         },
         {
           "name": "event-planning",
           "type": "text",
           "topic": "🎉 Plan upcoming events and activities",
-          "permissions": { "staff_only": true }
+          "permissions": {
+            "staff_only": true
+          }
         },
         {
           "name": "🔒 Staff Voice",
           "type": "voice",
-          "permissions": { "staff_only": true }
+          "permissions": {
+            "staff_only": true
+          }
         }
       ]
     }
   ],
   "roles": [
-    { "name": "👑 Owner", "color": "#E74C3C", "hoist": true, "position": 20, "permissions": ["ADMINISTRATOR"] },
-    { "name": "⚔️ Admin", "color": "#E67E22", "hoist": true, "position": 19, "permissions": ["MANAGE_GUILD", "MANAGE_ROLES", "MANAGE_CHANNELS", "BAN_MEMBERS", "KICK_MEMBERS", "MANAGE_MESSAGES"] },
-    { "name": "🛡️ Moderator", "color": "#2ECC71", "hoist": true, "position": 18, "permissions": ["MANAGE_MESSAGES", "KICK_MEMBERS", "MUTE_MEMBERS", "MANAGE_THREADS"] },
-    { "name": "🔧 Helper", "color": "#1ABC9C", "hoist": true, "position": 17, "permissions": ["MANAGE_MESSAGES"] },
-    { "name": "🎉 Event Manager", "color": "#9B59B6", "hoist": true, "position": 16, "permissions": ["MANAGE_MESSAGES"] },
-    { "name": "💎 VIP", "color": "#F1C40F", "hoist": true, "position": 12 },
-    { "name": "🌟 Active Member", "color": "#3498DB", "hoist": true, "position": 11 },
-    { "name": "🎖️ OG", "color": "#E67E22", "hoist": true, "position": 10 },
-    { "name": "👤 Member", "color": "#99AAB5", "hoist": false, "position": 8 },
-    { "name": "🔴 Red", "color": "#E74C3C", "hoist": false, "position": 5 },
-    { "name": "🟠 Orange", "color": "#E67E22", "hoist": false, "position": 5 },
-    { "name": "🟡 Yellow", "color": "#F1C40F", "hoist": false, "position": 5 },
-    { "name": "🟢 Green", "color": "#2ECC71", "hoist": false, "position": 5 },
-    { "name": "🔵 Blue", "color": "#3498DB", "hoist": false, "position": 5 },
-    { "name": "🟣 Purple", "color": "#9B59B6", "hoist": false, "position": 5 },
-    { "name": "🩷 Pink", "color": "#E91E63", "hoist": false, "position": 5 },
-    { "name": "He/Him", "color": "#99AAB5", "hoist": false, "position": 3 },
-    { "name": "She/Her", "color": "#99AAB5", "hoist": false, "position": 3 },
-    { "name": "They/Them", "color": "#99AAB5", "hoist": false, "position": 3 },
-    { "name": "Ask Me", "color": "#99AAB5", "hoist": false, "position": 3 },
-    { "name": "🎮 Gaming", "color": "#99AAB5", "hoist": false, "position": 2 },
-    { "name": "🎵 Music", "color": "#99AAB5", "hoist": false, "position": 2 },
-    { "name": "🎬 Movies", "color": "#99AAB5", "hoist": false, "position": 2 },
-    { "name": "📚 Books", "color": "#99AAB5", "hoist": false, "position": 2 },
-    { "name": "💻 Tech", "color": "#99AAB5", "hoist": false, "position": 2 },
-    { "name": "🎨 Art", "color": "#99AAB5", "hoist": false, "position": 2 },
-    { "name": "📢 Announcements", "color": "#99AAB5", "hoist": false, "position": 1 },
-    { "name": "🎉 Events", "color": "#99AAB5", "hoist": false, "position": 1 },
-    { "name": "🎁 Giveaways", "color": "#99AAB5", "hoist": false, "position": 1 },
-    { "name": "🎮 Game Night", "color": "#99AAB5", "hoist": false, "position": 1 },
-    { "name": "🔇 Muted", "color": "#95A5A6", "hoist": false, "position": 0, "permissions_deny": ["SEND_MESSAGES", "SPEAK", "ADD_REACTIONS"] }
-  ]
+    {
+      "name": "👑 Owner",
+      "color": "#E74C3C",
+      "hoist": true,
+      "position": 20,
+      "permissions": [
+        "ADMINISTRATOR"
+      ]
+    },
+    {
+      "name": "⚔️ Admin",
+      "color": "#E67E22",
+      "hoist": true,
+      "position": 19,
+      "permissions": [
+        "MANAGE_GUILD",
+        "MANAGE_ROLES",
+        "MANAGE_CHANNELS",
+        "BAN_MEMBERS",
+        "KICK_MEMBERS",
+        "MANAGE_MESSAGES"
+      ]
+    },
+    {
+      "name": "🛡️ Moderator",
+      "color": "#2ECC71",
+      "hoist": true,
+      "position": 18,
+      "permissions": [
+        "MANAGE_MESSAGES",
+        "KICK_MEMBERS",
+        "MUTE_MEMBERS",
+        "MANAGE_THREADS"
+      ]
+    },
+    {
+      "name": "🔧 Helper",
+      "color": "#1ABC9C",
+      "hoist": true,
+      "position": 17,
+      "permissions": [
+        "MANAGE_MESSAGES"
+      ]
+    },
+    {
+      "name": "🎉 Event Manager",
+      "color": "#9B59B6",
+      "hoist": true,
+      "position": 16,
+      "permissions": [
+        "MANAGE_MESSAGES"
+      ]
+    },
+    {
+      "name": "💎 VIP",
+      "color": "#F1C40F",
+      "hoist": true,
+      "position": 12
+    },
+    {
+      "name": "🌟 Active Member",
+      "color": "#3498DB",
+      "hoist": true,
+      "position": 11
+    },
+    {
+      "name": "🎖️ OG",
+      "color": "#E67E22",
+      "hoist": true,
+      "position": 10
+    },
+    {
+      "name": "👤 Member",
+      "color": "#99AAB5",
+      "hoist": false,
+      "position": 8
+    },
+    {
+      "name": "🔴 Red",
+      "color": "#E74C3C",
+      "hoist": false,
+      "position": 5
+    },
+    {
+      "name": "🟠 Orange",
+      "color": "#E67E22",
+      "hoist": false,
+      "position": 5
+    },
+    {
+      "name": "🟡 Yellow",
+      "color": "#F1C40F",
+      "hoist": false,
+      "position": 5
+    },
+    {
+      "name": "🟢 Green",
+      "color": "#2ECC71",
+      "hoist": false,
+      "position": 5
+    },
+    {
+      "name": "🔵 Blue",
+      "color": "#3498DB",
+      "hoist": false,
+      "position": 5
+    },
+    {
+      "name": "🟣 Purple",
+      "color": "#9B59B6",
+      "hoist": false,
+      "position": 5
+    },
+    {
+      "name": "🩷 Pink",
+      "color": "#E91E63",
+      "hoist": false,
+      "position": 5
+    },
+    {
+      "name": "He/Him",
+      "color": "#99AAB5",
+      "hoist": false,
+      "position": 3
+    },
+    {
+      "name": "She/Her",
+      "color": "#99AAB5",
+      "hoist": false,
+      "position": 3
+    },
+    {
+      "name": "They/Them",
+      "color": "#99AAB5",
+      "hoist": false,
+      "position": 3
+    },
+    {
+      "name": "Ask Me",
+      "color": "#99AAB5",
+      "hoist": false,
+      "position": 3
+    },
+    {
+      "name": "🎮 Gaming",
+      "color": "#99AAB5",
+      "hoist": false,
+      "position": 2
+    },
+    {
+      "name": "🎵 Music",
+      "color": "#99AAB5",
+      "hoist": false,
+      "position": 2
+    },
+    {
+      "name": "🎬 Movies",
+      "color": "#99AAB5",
+      "hoist": false,
+      "position": 2
+    },
+    {
+      "name": "📚 Books",
+      "color": "#99AAB5",
+      "hoist": false,
+      "position": 2
+    },
+    {
+      "name": "💻 Tech",
+      "color": "#99AAB5",
+      "hoist": false,
+      "position": 2
+    },
+    {
+      "name": "🎨 Art",
+      "color": "#99AAB5",
+      "hoist": false,
+      "position": 2
+    },
+    {
+      "name": "📢 Announcements",
+      "color": "#99AAB5",
+      "hoist": false,
+      "position": 1
+    },
+    {
+      "name": "🎉 Events",
+      "color": "#99AAB5",
+      "hoist": false,
+      "position": 1
+    },
+    {
+      "name": "🎁 Giveaways",
+      "color": "#99AAB5",
+      "hoist": false,
+      "position": 1
+    },
+    {
+      "name": "🎮 Game Night",
+      "color": "#99AAB5",
+      "hoist": false,
+      "position": 1
+    },
+    {
+      "name": "🔇 Muted",
+      "color": "#95A5A6",
+      "hoist": false,
+      "position": 0,
+      "permissions_deny": [
+        "SEND_MESSAGES",
+        "SPEAK",
+        "ADD_REACTIONS"
+      ]
+    }
+  ],
+  "automod": {
+    "spam_filter": true,
+    "mention_limit": 5,
+    "invite_filter": true,
+    "keyword_filter": [
+      "free nitro",
+      "claim prize",
+      "dm me for"
+    ]
+  },
+  "onboarding": {
+    "enabled": true,
+    "prompts": [
+      {
+        "title": "Pick your interests!",
+        "options": [
+          {
+            "title": "Gaming",
+            "emoji": "🎮",
+            "roles": [
+              "🎮 Gamer"
+            ],
+            "channels": [
+              "gaming"
+            ]
+          },
+          {
+            "title": "Music",
+            "emoji": "🎵",
+            "roles": [
+              "🎵 Music Lover"
+            ],
+            "channels": [
+              "music"
+            ]
+          },
+          {
+            "title": "Art & Creative",
+            "emoji": "🎨",
+            "roles": [
+              "🎨 Artist"
+            ],
+            "channels": [
+              "art-gallery"
+            ]
+          },
+          {
+            "title": "Tech & Coding",
+            "emoji": "💻",
+            "roles": [
+              "💻 Tech Enthusiast"
+            ],
+            "channels": [
+              "tech-talk"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Pick your pronouns",
+        "options": [
+          {
+            "title": "He/Him",
+            "emoji": "💙",
+            "roles": [
+              "He/Him"
+            ]
+          },
+          {
+            "title": "She/Her",
+            "emoji": "💜",
+            "roles": [
+              "She/Her"
+            ]
+          },
+          {
+            "title": "They/Them",
+            "emoji": "💚",
+            "roles": [
+              "They/Them"
+            ]
+          },
+          {
+            "title": "Ask Me",
+            "emoji": "💛",
+            "roles": [
+              "Ask My Pronouns"
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

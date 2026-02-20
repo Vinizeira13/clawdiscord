@@ -26,10 +26,12 @@ import { BackupService } from './services/backup.js';
 import { AnalyticsService } from './services/analytics.js';
 import { AIAgent } from './services/ai-agent.js';
 import { OnboardingService } from './services/onboarding.js';
+import { validateEnv } from './env.js';
 
 config();
+const env = validateEnv();
 
-const CLIENT_ID = process.env.DISCORD_CLIENT_ID || '1474410305609273598';
+const CLIENT_ID = env.DISCORD_CLIENT_ID;
 
 // ─── SLASH COMMANDS ───
 const commands = [
